@@ -1,0 +1,161 @@
+# ============================================================
+# GitHub Actions Events (All Common Ones) – Explained
+# ============================================================
+
+# -------------------------
+# Code & Repository Events
+# -------------------------
+
+push
+# Triggered when code is pushed to a branch or tag
+# Commonly used for CI (build, test, lint)
+
+pull_request
+# Triggered on pull request actions (opened, updated, closed)
+# Used for PR validation and checks
+
+pull_request_target
+# Runs in base repo context (has access to secrets)
+# Used carefully for PRs from forks
+
+create
+# Triggered when a branch or tag is created
+
+delete
+# Triggered when a branch or tag is deleted
+
+fork
+# Triggered when someone forks the repository
+
+# -------------------------
+# Manual & External Triggers
+# -------------------------
+
+workflow_dispatch
+# Manually trigger workflow from GitHub UI or API
+# Supports user-defined inputs
+
+repository_dispatch
+# Triggered by an external system via GitHub API
+# Used for integrations or cross-system triggers
+
+# -------------------------
+# Time-Based Events
+# -------------------------
+
+schedule
+# Runs on a cron schedule
+# Used for nightly builds, cleanup jobs, reports
+
+# -------------------------
+# Release & Versioning
+# -------------------------
+
+release
+# Triggered on release actions (published, created, edited)
+# Used for packaging and deployment
+
+registry_package
+# Triggered when a GitHub package is published or updated
+
+# -------------------------
+# Issues & Discussions
+# -------------------------
+
+issues
+# Triggered on issue activity (opened, closed, edited)
+
+issue_comment
+# Triggered when a comment is added to an issue or PR
+
+discussion
+# Triggered on GitHub Discussions activity
+
+discussion_comment
+# Triggered when a comment is added to a discussion
+
+projects
+# Triggered on GitHub Projects activity
+
+# -------------------------
+# CI / Checks / Reviews
+# -------------------------
+
+check_run
+# Triggered when a check run is created or completed
+
+check_suite
+# Triggered when a check suite is requested or completed
+
+status
+# Triggered when commit status changes
+
+pull_request_review
+# Triggered when a PR review is submitted (approve/request changes)
+
+pull_request_review_comment
+# Triggered on PR review comments
+
+# -------------------------
+# Security & Dependencies
+# -------------------------
+
+security_advisory
+# Triggered when a security advisory is created or updated
+
+dependabot_alert
+# Triggered when Dependabot finds a vulnerability
+
+# -------------------------
+# Deployment & Environments
+# -------------------------
+
+deployment
+# Triggered when a deployment is created
+
+deployment_status
+# Triggered when deployment status changes (success/failure)
+
+environment
+# Triggered when environment protection rules apply
+
+# -------------------------
+# Workflow Chaining
+# -------------------------
+
+workflow_run
+# Triggered when another workflow completes
+# Used for CI → CD pipelines
+
+# -------------------------
+# Wiki, Pages & Docs
+# -------------------------
+
+gollum
+# Triggered when wiki pages are created or updated
+
+# page_build
+# Triggered when GitHub Pages site is built
+
+# -------------------------
+# GitHub App & Org Events
+# -------------------------
+
+installation
+# Triggered when a GitHub App is installed or removed
+
+installation_repositories
+# Triggered when repos are added/removed from an app
+
+member
+# Triggered when users are added or removed from an org
+
+team
+# Triggered on team creation, deletion, or changes
+
+meta
+# Triggered when GitHub reports a system-wide event (rare)
+
+# ============================================================
+# End of GitHub Actions Events Cheat Sheet
+# ============================================================
