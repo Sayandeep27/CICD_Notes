@@ -47,6 +47,143 @@ Supports user-defined inputs.
 Triggered via GitHub API from an external system.
 Used for integrations and cross-system triggers.
 
+
+workflow_dispatch
+
+What it is
+A manual trigger for a GitHub Actions workflow.
+You (or a script) explicitly click Run workflow from the GitHub UI or call it via API.
+
+Used inside GitHub Actions.
+
+Why it exists
+
+Sometimes you don’t want automation.
+You want control.
+
+Examples:
+
+Deploy only when you are confident
+
+Run a pipeline with custom inputs
+
+Trigger a job on demand
+
+How it works (simple)
+
+Go to Actions tab
+
+Select workflow
+
+Click Run workflow
+
+Optionally provide inputs
+
+Example scenario (real team)
+
+You are in a team of 5 developers.
+
+CI runs on every push (tests, lint)
+
+Deployment should happen only when the tech lead approves
+
+So:
+
+CI → automatic
+
+Deploy → workflow_dispatch
+
+The tech lead clicks Run workflow → Deploy to Prod
+
+Example YAML
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Where to deploy"
+        required: true
+        default: "staging"
+
+When to use workflow_dispatch
+
+Manual deployments
+
+Hotfix releases
+
+Emergency rollback
+
+One-time jobs
+
+Controlled production actions
+
+repository_dispatch
+
+What it is
+A workflow trigger called from outside GitHub using the GitHub API.
+
+This is for external systems → GitHub communication.
+
+Why it exists
+
+GitHub workflows normally react to GitHub events.
+But what if:
+
+Jenkins
+
+External backend
+
+SaaS tool
+
+ML pipeline
+needs to trigger GitHub?
+
+That’s what repository_dispatch is for.
+
+How it works (simple)
+
+External system sends an HTTP POST to GitHub API
+
+GitHub receives the event
+
+Workflow starts
+
+Example scenario (real team)
+
+Your company has:
+
+ML training pipeline running on a separate server
+
+Code lives on GitHub
+
+Deployment should start only after training finishes
+
+Flow:
+
+ML Server → GitHub API → repository_dispatch → Deploy workflow
+
+Example YAML
+on:
+  repository_dispatch:
+    types: [model_trained]
+
+Example API call (conceptual)
+POST /repos/OWNER/REPO/dispatches
+{
+  "event_type": "model_trained"
+}
+
+When to use repository_dispatch
+
+External CI/CD tools
+
+ML pipelines
+
+Cross-repository automation
+
+SaaS integrations
+
+Custom backend triggers
+
 ---
 
 ## Time-Based Events
