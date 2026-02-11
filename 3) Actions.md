@@ -24,8 +24,6 @@ Examples you already know:
 
 > **A GitHub Action is a reusable set of steps that performs a specific task inside a workflow.**
 
-GitHub Actions has a clear hierarchy:
-
 * **Workflow** → the full CI/CD pipeline
 * **Job** → a group of steps
 * **Step** → a single task
@@ -61,6 +59,7 @@ Problems with this approach:
 
 ```yaml
 steps:
+  - name: Install Python
   - uses: actions/setup-python@v5
 ```
 
@@ -78,13 +77,15 @@ That **single line**:
 
 ## What Does `uses:` Mean?
 
+Used when you want to use a pre-built GitHub Action
+
 ```yaml
 uses: actions/setup-python@v5
 ```
 
 This means:
 
-> “GitHub, run the prebuilt action located at this repository.”
+> Meaning: "Use this already-built-in action by Github to install Python"
 
 Breakdown:
 
@@ -177,13 +178,7 @@ Write once → reuse everywhere.
 
 ---
 
-## Real-World Analogy
 
-* **Workflow** → Factory
-* **Job** → Assembly line
-* **Action** → Machine
-
-Instead of building a machine every time, you plug in a ready-made one.
 
 ```yaml
 - uses: actions/setup-python@v5
@@ -211,11 +206,10 @@ jobs:
       - run: pytest
 ```
 
-Explanation:
+uses vs run (Very very Important):
 
-* `checkout` → pulls your repository
-* `setup-python` → installs Python
-* `run` → executes shell commands
+* `uses` → Used when you want to use a pre-built GitHub Action (someone else’s ready-made tool), Meaning: “Use this already-built action to install Python.”
+* `run` → Used when you want to run your own shell commands, Meaning: “Execute this command on the machine.”
 
 ---
 
