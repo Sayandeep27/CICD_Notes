@@ -4,7 +4,7 @@ This README explains **what a GitHub Action is**, why it exists, and how it is u
 
 ---
 
-## First, Forget GitHub Actions for a Moment
+## First, Forget Actions for a Moment
 
 Think of an **action like a ready-made function or tool**.
 
@@ -22,7 +22,7 @@ Examples you already know:
 
 ## What Is an Action in GitHub Actions?
 
-> **A GitHub Action is a reusable set of steps that performs a specific task inside a workflow.**
+> **A Action is a reusable set of steps that performs a specific task inside a workflow.**
 
 * **Workflow** → the full CI/CD pipeline
 * **Job** → a group of steps
