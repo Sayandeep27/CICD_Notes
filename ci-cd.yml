@@ -50,8 +50,8 @@ jobs:
       - name: Install dependencies
         run: |                                   # The | allows you to write commands on multiple lines instead of a single line
         
-          python -m pip install --upgrade pip   # Upgrade pip to latest version
-          pip install -r requirements.txt    # Install dependencies listed in requirements.txt (github has already cloned your repository into the runner, so the runner already has your requirements.txt file)
+          python -m pip install --upgrade pip    # Upgrade pip to latest version
+          pip install -r requirements.txt        # Install dependencies listed in requirements.txt (github has already cloned your repository into the runner, so the runner already has your requirements.txt file)
 
           
 
