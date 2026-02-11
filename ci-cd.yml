@@ -20,7 +20,7 @@ jobs:
   # CI JOB (Build, Test, Validate)
   # ==============================
   ci:
-    # The OS on which the job will run
+    # The OS on which the job will run (Runner)
     runs-on: ubuntu-latest
 
     # Strategy allows running the same job multiple times
@@ -32,44 +32,56 @@ jobs:
     # Steps are executed sequentially
     steps:
 
-      # Step 1: Checkout the repository code
+      # Step 1: Checkout the repository code - means clones your repository into the runner so the workflow can access your code
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4   # means clones your repository into the runner so the workflow can access your code 
 
+        
       # Step 2: Set up Python based on matrix version
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5  # GitHub is downloading and running a ready-made tool called setup-python (version 5) to install Python on the machine before your code runs
         with:
           # This dynamically picks Python version from matrix
           python-version: ${{ matrix.python-version }}
 
+          
+
       # Step 3: Install project dependencies
       - name: Install dependencies
-        run: |
-          # Upgrade pip to latest version
-          python -m pip install --upgrade pip
-          # Install dependencies listed in requirements.txt
-          pip install -r requirements.txt
+        run: |                                   # The | allows you to write commands on multiple lines instead of a single line
+        
+          python -m pip install --upgrade pip   # Upgrade pip to latest version
+          pip install -r requirements.txt    # Install dependencies listed in requirements.txt (github has already cloned your repository into the runner, so the runner already has your requirements.txt file)
+
+          
 
       # Step 4: Run linting using flake8
       - name: Run linting (flake8)
         # flake8 checks for syntax errors and style issues
         run: flake8 .
 
+        
+
       # Step 5: Check code formatting using black
       - name: Check formatting (black)
         # --check ensures black only validates formatting
         run: black --check .
+
+        
 
       # Step 6: Run security scan using bandit
       - name: Security scan (bandit)
         # -r app means recursively scan the app directory
         run: bandit -r app
 
+
+
       # Step 7: Run unit tests using pytest
       - name: Run tests (pytest)
         # pytest runs all test files (test_*.py or *_test.py)
         run: pytest
+
+
 
   # ==============================
   # CD JOB (Deploy)
@@ -102,11 +114,38 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 4: Deploy application
-      - name: Deploy Application
+      # Step 4: Deploy application using Docker
+      - name: Build and Push Docker Image
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          echo "Deploying application..."
-          # Example deployment commands:
-          # docker build -t myapp .
-          # docker push myapp
-          # ssh user@server "docker pull myapp && docker run ..."
+          echo "Logging into Docker Hub..."
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+          echo "Building Docker image..."
+          docker build -t $DOCKER_USERNAME/myapp:latest .
+
+          echo "Pushing Docker image..."
+          docker push $DOCKER_USERNAME/myapp:latest
+
+          
+      # Step 5: Deploy to Server via SSH
+      - name: Deploy to Server via SSH
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+        run: |
+          echo "Setting up SSH key..."
+          mkdir -p ~/.ssh
+          echo "$SERVER_SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          echo "Connecting to server and deploying..."
+          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST << 'EOF'
+            docker pull $DOCKER_USERNAME/myapp:latest
+            docker stop myapp || true
+            docker rm myapp || true
+            docker run -d -p 80:5000 --name myapp $DOCKER_USERNAME/myapp:latest
+          EOF
