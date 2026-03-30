@@ -1,0 +1,94 @@
+name: MLOps CI-CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: churn-model
+  ECS_CLUSTER: my-cluster
+  ECS_SERVICE: my-service
+  CONTAINER_NAME: churn-container
+
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # -------------------------
+    # 1. CI (Continuous Integration)
+    # -------------------------
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        pytest   # or your test script
+
+    # -------------------------
+    # 2. Configure AWS
+    # -------------------------
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        region: ${{ env.AWS_REGION }}
+
+    # -------------------------
+    # 3. Login to ECR
+    # -------------------------
+    - name: Login to ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    # -------------------------
+    # 4. Build Docker Image
+    # -------------------------
+    - name: Build Docker image
+      run: |
+        docker build -t $ECR_REPOSITORY .
+
+    # -------------------------
+    # 5. Tag Image
+    # -------------------------
+    - name: Tag Docker image
+      run: |
+        docker tag $ECR_REPOSITORY:latest \
+        ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:latest
+
+    # -------------------------
+    # 6. Push to ECR  (Continuous Delivery)
+    # -------------------------
+    - name: Push to ECR
+      run: |
+        docker push \
+        ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:latest
+
+    # -------------------------
+    # 7. Output Image URI
+    # -------------------------
+    - name: Print Image URI
+      run: |
+        echo "IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:latest"
+
+    # -------------------------
+    # 8. Deploy to ECS (Continuous Deployment)
+    # -------------------------
+    - name: Deploy to ECS
+      run: |
+        aws ecs update-service \
+        --cluster $ECS_CLUSTER \
+        --service $ECS_SERVICE \
+        --force-new-deployment
